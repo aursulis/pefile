@@ -6508,6 +6508,23 @@ class PE:
         dump.add_line(", ".join(flags))
         dump.add_newline()
 
+        ex_dll_characteristics_flags = retrieve_flags(
+            EX_DLL_CHARACTERISTICS, "IMAGE_DLLCHARACTERISTICS_EX_"
+        )
+
+        dump.add("ExDllCharacteristics: ")
+        flags = []
+        if hasattr(self, "DIRECTORY_ENTRY_DEBUG") and self.DIRECTORY_ENTRY_DEBUG is not None:
+            for debug_entry in self.DIRECTORY_ENTRY_DEBUG:
+                if debug_entry.struct.Type != DEBUG_TYPE["IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS"]:
+                    continue
+
+                for flag in sorted(ex_dll_characteristics_flags):
+                    if getattr(debug_entry.entry, flag[0]):
+                        flags.append(flag[0])
+        dump.add_line(", ".join(flags))
+        dump.add_newline()
+
         dump.add_header("PE Sections")
 
         section_flags = retrieve_flags(SECTION_CHARACTERISTICS, "IMAGE_SCN_")
